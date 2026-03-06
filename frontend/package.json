@@ -1,4 +1,4 @@
-Set-Content frontend/package.json '{
+{
   "name": "cryptoquant-frontend",
   "private": true,
   "version": "1.0.0",
@@ -16,4 +16,4 @@ Set-Content frontend/package.json '{
     "@vitejs/plugin-react": "^4.2.0",
     "vite": "^5.0.0"
   }
-}'
+}
