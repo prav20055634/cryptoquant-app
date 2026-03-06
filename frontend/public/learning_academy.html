@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CryptoQuant | Learning Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#000000;--bg1:#080808;--bg2:#0f0f0f;--bg3:#141414;--bg4:#1a1a1a;
+  --amber:#ff9900;--amber2:#ffb84d;--amber3:#ffd080;--amber-dim:#7a4a00;
+  --green:#00cc44;--green2:#00ff55;--green-dim:#004d1a;
+  --white:#f0f0f0;--white2:#c8c8c8;--white3:#888888;--white4:#444444;
+  --red:#ff3333;--red-dim:#660000;
+  --border:#2a2a2a;--border2:#333333;
+  --font-mono:'IBM Plex Mono',monospace;
+  --font-sans:'IBM Plex Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white2);font-family:var(--font-mono);min-height:100vh;overflow-x:hidden;}
+
+/* SUBTLE SCANLINE */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.008) 3px,rgba(255,255,255,0.008) 4px);pointer-events:none;z-index:999;}
+
+/* TOP STATUS BAR */
+.statusbar{
+  background:var(--amber);color:#000;
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:700;
+  padding:4px 1.5rem;display:flex;justify-content:space-between;align-items:center;
+  letter-spacing:1.5px;
+}
+.statusbar-right{display:flex;gap:2rem;}
+.status-blink{animation:blink 2s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* HEADER */
+header{
+  background:var(--bg1);
+  border-bottom:2px solid var(--amber);
+  padding:0 1.5rem;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo-block{display:flex;align-items:center;gap:0;}
+.logo-bracket{font-size:1.4rem;color:var(--amber);font-weight:700;line-height:1;}
+.logo-inner{
+  background:var(--amber);color:#000;
+  font-family:var(--font-mono);font-size:0.75rem;font-weight:700;
+  padding:4px 10px;letter-spacing:3px;
+}
+.logo-sub{font-size:0.6rem;color:var(--white3);letter-spacing:3px;margin-left:12px;font-family:var(--font-mono);}
+.header-right{display:flex;align-items:center;gap:2rem;}
+.xp-block{display:flex;align-items:center;gap:10px;font-size:0.65rem;color:var(--white3);}
+.xp-num{color:var(--green2);font-weight:700;font-size:0.75rem;}
+.xp-bar{width:100px;height:4px;background:var(--bg4);border:1px solid var(--border2);}
+.xp-fill{height:100%;background:var(--green);transition:width 0.6s cubic-bezier(.4,0,.2,1);width:0%;}
+.level-block{font-size:0.6rem;color:var(--amber);letter-spacing:2px;text-align:right;}
+.level-num-h{font-size:0.9rem;font-weight:700;color:var(--amber);}
+
+/* NAV */
+.nav{
+  background:var(--bg1);
+  border-bottom:1px solid var(--border2);
+  display:flex;overflow-x:auto;
+}
+.nav-btn{
+  font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:2px;
+  padding:12px 24px;border:none;border-right:1px solid var(--border);
+  background:transparent;color:var(--white4);cursor:pointer;
+  transition:all 0.15s;white-space:nowrap;position:relative;
+  border-bottom:2px solid transparent;
+}
+.nav-btn:hover{background:var(--bg3);color:var(--white2);}
+.nav-btn.active{background:var(--bg2);color:var(--amber);border-bottom:2px solid var(--amber);}
+.nav-btn .n-icon{margin-right:6px;}
+
+/* SECTIONS */
+.section{display:none;padding:1.5rem;max-width:1280px;margin:0 auto;}
+.section.active{display:block;animation:fadein 0.2s ease;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border2);}
+.ph-title{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--amber);letter-spacing:3px;}
+.ph-sub{font-size:0.65rem;color:var(--white3);letter-spacing:1px;}
+.ph-rule{flex:1;height:1px;background:var(--border);}
+
+/* PANEL */
+.panel{background:var(--bg1);border:1px solid var(--border2);margin-bottom:1px;}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  background:var(--bg2);
+}
+.panel-title{font-size:0.6rem;font-weight:700;color:var(--amber3);letter-spacing:2px;}
+.panel-body{padding:14px;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;}
+
+/* ALGO CARDS */
+.algo-panel{background:var(--bg1);border:1px solid var(--border2);cursor:pointer;transition:border-color 0.15s;}
+.algo-panel:hover{border-color:var(--amber-dim);}
+.algo-panel.expanded{border-color:var(--amber);}
+.algo-head{padding:14px;}
+.algo-row1{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.algo-idx{
+  font-size:2rem;font-weight:700;color:var(--bg4);
+  -webkit-text-stroke:1px var(--amber-dim);
+  min-width:44px;line-height:1;
+}
+.algo-panel.expanded .algo-idx{color:var(--amber-dim);-webkit-text-stroke:1px var(--amber);}
+.algo-name-block{}
+.algo-name{font-size:0.8rem;font-weight:700;color:var(--white);letter-spacing:2px;margin-bottom:3px;}
+.algo-type{font-size:0.6rem;color:var(--amber);letter-spacing:1px;}
+.algo-desc{font-size:0.75rem;color:var(--white3);line-height:1.6;margin-bottom:10px;}
+.algo-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.atag{font-size:0.55rem;padding:2px 7px;border:1px solid var(--border2);color:var(--white4);letter-spacing:1px;}
+.algo-toggle{font-size:0.6rem;color:var(--green);letter-spacing:1px;border:1px solid var(--green-dim);padding:4px 12px;background:transparent;cursor:pointer;transition:all 0.15s;font-family:var(--font-mono);}
+.algo-toggle:hover{background:var(--green-dim);color:var(--green2);}
+.algo-expand{max-height:0;overflow:hidden;transition:max-height 0.45s ease;}
+.algo-expand.open{max-height:500px;border-top:1px solid var(--border);}
+.algo-expand-inner{padding:14px;}
+.ae-label{font-size:0.55rem;color:var(--amber);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+.ae-text{font-size:0.72rem;color:var(--white3);line-height:1.7;margin-bottom:12px;}
+.ae-table{width:100%;border-collapse:collapse;}
+.ae-table tr{border-bottom:1px solid var(--border);}
+.ae-table td{padding:5px 0;font-size:0.68rem;}
+.ae-table td:first-child{color:var(--white3);}
+.ae-table td:last-child{color:var(--green2);text-align:right;font-weight:600;}
+
+/* GLOSSARY */
+.gls-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.gls-search{
+  background:var(--bg2);border:1px solid var(--border2);
+  color:var(--white2);font-family:var(--font-mono);font-size:0.7rem;
+  padding:8px 12px;outline:none;flex:1;min-width:200px;
+  transition:border-color 0.15s;
+}
+.gls-search:focus{border-color:var(--amber);}
+.gls-search::placeholder{color:var(--white4);}
+.cat-btn{font-family:var(--font-mono);font-size:0.55rem;padding:6px 12px;border:1px solid var(--border2);background:transparent;color:var(--white4);cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.cat-btn:hover,.cat-btn.on{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+.gls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;}
+.gls-card{background:var(--bg1);border:1px solid var(--border);padding:12px;transition:border-color 0.15s;}
+.gls-card:hover{border-color:var(--border2);}
+.gls-term{font-size:0.75rem;font-weight:700;color:var(--white);margin-bottom:4px;letter-spacing:1px;}
+.gls-def{font-size:0.7rem;color:var(--white3);line-height:1.5;}
+.gls-cat{font-size:0.55rem;color:var(--amber);letter-spacing:1px;margin-top:6px;}
+
+/* RESOURCES */
+.res-group{margin-bottom:1.5rem;}
+.res-group-title{
+  font-size:0.6rem;font-weight:700;color:var(--amber);letter-spacing:3px;
+  padding:6px 0;border-bottom:1px solid var(--border2);margin-bottom:8px;
+  display:flex;align-items:center;gap:10px;
+}
+.res-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg1);border:1px solid var(--border);
+  padding:10px 14px;margin-bottom:2px;cursor:pointer;
+  transition:all 0.15s;text-decoration:none;color:inherit;
+}
+.res-item:hover{border-color:var(--amber-dim);background:var(--bg2);}
+.res-icon{font-size:1rem;min-width:28px;text-align:center;color:var(--amber);}
+.res-title{font-size:0.75rem;color:var(--white2);flex:1;}
+.res-meta{font-size:0.6rem;color:var(--white3);}
+.res-arr{color:var(--green);font-size:0.8rem;}
+
+/* QUIZ */
+.quiz-wrap{max-width:760px;margin:0 auto;}
+.quiz-hud{
+  display:flex;align-items:center;gap:1rem;
+  background:var(--bg2);border:1px solid var(--border2);
+  padding:10px 16px;margin-bottom:1rem;
+}
+.hud-item{font-size:0.65rem;color:var(--white3);}
+.hud-val{color:var(--white);font-weight:700;font-size:0.75rem;}
+.hud-score{color:var(--green2);}
+.hud-bar-track{flex:1;height:3px;background:var(--bg4);border:1px solid var(--border);}
+.hud-bar-fill{height:100%;background:var(--amber);transition:width 0.4s;}
+.q-card{background:var(--bg1);border:1px solid var(--border2);margin-bottom:8px;}
+.q-meta{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:8px 16px;display:flex;align-items:center;gap:1rem;
+}
+.q-cat{font-size:0.55rem;color:var(--amber);letter-spacing:2px;}
+.q-num{font-size:0.55rem;color:var(--white4);margin-left:auto;}
+.q-body{padding:20px 16px;}
+.q-text{font-size:0.95rem;color:var(--white);line-height:1.6;margin-bottom:1.25rem;font-family:var(--font-sans);font-weight:500;}
+.opts{display:grid;gap:4px;}
+.opt{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg2);border:1px solid var(--border2);
+  padding:12px 16px;cursor:pointer;transition:all 0.12s;
+  font-family:var(--font-mono);font-size:0.75rem;color:var(--white2);
+  text-align:left;width:100%;
+}
+.opt:hover:not(:disabled){border-color:var(--amber-dim);background:var(--bg3);}
+.opt-letter{
+  font-size:0.6rem;font-weight:700;
+  width:22px;height:22px;border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--amber);
+}
+.opt.correct{border-color:var(--green);background:rgba(0,204,68,0.08);color:var(--green2);}
+.opt.correct .opt-letter{border-color:var(--green);color:var(--green2);}
+.opt.wrong{border-color:var(--red);background:rgba(255,51,51,0.08);color:var(--red);}
+.opt.wrong .opt-letter{border-color:var(--red);color:var(--red);}
+.feedback{
+  margin:8px 16px 16px;padding:10px 14px;
+  border-left:3px solid var(--green);
+  background:rgba(0,204,68,0.06);
+  font-size:0.7rem;color:var(--white3);line-height:1.6;
+  display:none;
+}
+.feedback.show{display:block;}
+.feedback.fb-wrong{border-color:var(--red);background:rgba(255,51,51,0.06);}
+.fb-label{font-size:0.6rem;font-weight:700;letter-spacing:2px;margin-bottom:4px;}
+.fb-correct .fb-label{color:var(--green2);}
+.fb-wrong .fb-label{color:var(--red);}
+.quiz-nav{display:flex;justify-content:flex-end;padding:0 16px 16px;}
+.btn{
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:2px;
+  padding:10px 24px;border:1px solid var(--amber);
+  background:transparent;color:var(--amber);cursor:pointer;
+  transition:all 0.15s;
+}
+.btn:hover{background:var(--amber);color:#000;}
+.btn-green{border-color:var(--green);color:var(--green);}
+.btn-green:hover{background:var(--green);color:#000;}
+.quiz-done{
+  background:var(--bg1);border:1px solid var(--amber);
+  padding:3rem;text-align:center;display:none;
+}
+.quiz-done.show{display:block;}
+.done-score{font-size:3.5rem;font-weight:700;color:var(--amber);letter-spacing:4px;margin:1rem 0;}
+.done-pct{font-size:0.7rem;color:var(--white3);margin-bottom:1rem;}
+.done-xp{
+  display:inline-block;border:1px solid var(--green);
+  color:var(--green2);padding:8px 24px;font-size:0.75rem;
+  font-weight:700;letter-spacing:2px;margin-bottom:1.5rem;
+}
+
+/* HOME */
+.home-top{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;
+  margin-bottom:1px;
+}
+.stat-box{
+  background:var(--bg1);border:1px solid var(--border2);
+  padding:14px;
+}
+.sb-label{font-size:0.55rem;color:var(--white3);letter-spacing:2px;margin-bottom:6px;}
+.sb-val{font-size:1.6rem;font-weight:700;color:var(--amber);line-height:1;}
+.sb-val-g{color:var(--green2);}
+.sb-sub{font-size:0.6rem;color:var(--white4);margin-top:4px;}
+.level-progress-bar{height:6px;background:var(--bg4);border:1px solid var(--border2);margin-top:8px;}
+.level-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));transition:width 0.8s;}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-bottom:1px;}
+.home-card{
+  background:var(--bg1);border:1px solid var(--border2);
+  padding:1.25rem;cursor:pointer;transition:all 0.15s;
+  display:flex;flex-direction:column;gap:6px;
+}
+.home-card:hover{border-color:var(--amber);background:var(--bg2);}
+.hc-icon{font-size:1.5rem;margin-bottom:4px;}
+.hc-title{font-size:0.7rem;font-weight:700;color:var(--white);letter-spacing:2px;}
+.hc-desc{font-size:0.65rem;color:var(--white3);}
+.hc-arrow{font-size:0.7rem;color:var(--amber);margin-top:auto;}
+.ticker-bar{
+  background:var(--bg2);border:1px solid var(--border2);
+  padding:8px 14px;margin-bottom:1px;
+  display:flex;gap:2rem;overflow-x:auto;
+  font-size:0.6rem;
+}
+.tick-item{display:flex;gap:6px;white-space:nowrap;}
+.tick-label{color:var(--white3);}
+.tick-val{color:var(--white2);font-weight:600;}
+.tick-g{color:var(--green2);}
+.tick-r{color:var(--red);}
+
+/* DEPLOY */
+.deploy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;}
+.deploy-card{background:var(--bg1);border:1px solid var(--border2);padding:0;}
+.dc-head{
+  padding:10px 14px;border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg2);
+}
+.dc-title{font-size:0.65rem;font-weight:700;color:var(--white);letter-spacing:2px;}
+.dc-badge{font-size:0.55rem;padding:2px 8px;border:1px solid;letter-spacing:1px;}
+.badge-amber{color:var(--amber);border-color:var(--amber-dim);}
+.badge-green{color:var(--green2);border-color:var(--green-dim);}
+.badge-white{color:var(--white3);border-color:var(--border2);}
+.dc-body{padding:14px;}
+.dc-desc{font-size:0.7rem;color:var(--white3);line-height:1.6;margin-bottom:12px;}
+.step-list{list-style:none;}
+.step-list li{display:flex;gap:10px;margin-bottom:10px;font-size:0.68rem;}
+.step-n{
+  min-width:20px;height:20px;border:1px solid var(--amber-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.55rem;color:var(--amber);flex-shrink:0;margin-top:1px;
+}
+.step-text{color:var(--white3);line-height:1.5;}
+.step-text strong{color:var(--white2);}
+code{
+  display:block;margin-top:4px;
+  font-family:var(--font-mono);font-size:0.65rem;
+  background:var(--bg);border-left:2px solid var(--amber-dim);
+  padding:4px 10px;color:var(--amber3);
+}
+code.green{border-color:var(--green-dim);color:var(--green);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--amber-dim);}
+
+@media(max-width:700px){
+  .home-top{grid-template-columns:1fr 1fr;}
+  .ph-sub,.ph-rule{display:none;}
+  header{padding:0 1rem;}
+  .section{padding:1rem;}
+  .logo-sub{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="statusbar">
+  <span>CRYPTOQUANT TERMINAL v3.1 — LEARNING ACADEMY MODULE</span>
+  <div class="statusbar-right">
+    <span class="status-blink">● LIVE</span>
+    <span id="clock">--:--:--</span>
+    <span>SYSTEM NOMINAL</span>
+  </div>
+</div>
+
+<header>
+  <div class="logo-block">
+    <span class="logo-bracket">[</span>
+    <span class="logo-inner">CQ</span>
+    <span class="logo-bracket">]</span>
+    <span class="logo-sub">LEARNING ACADEMY</span>
+  </div>
+  <div class="header-right">
+    <div class="xp-block">
+      <span>XP</span>
+      <div class="xp-bar"><div class="xp-fill" id="hXPBar"></div></div>
+      <span class="xp-num" id="hXPNum">0</span>
+    </div>
+    <div class="level-block">
+      <div>LVL <span class="level-num-h" id="hLvl">1</span></div>
+      <div id="hLvlTitle" style="font-size:0.5rem;letter-spacing:1px;">NOVICE</div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="go('home',this)"><span class="n-icon">▸</span>OVERVIEW</button>
+  <button class="nav-btn" onclick="go('strategies',this)"><span class="n-icon">▸</span>STRATEGIES</button>
+  <button class="nav-btn" onclick="go('glossary',this)"><span class="n-icon">▸</span>GLOSSARY</button>
+  <button class="nav-btn" onclick="go('resources',this)"><span class="n-icon">▸</span>RESOURCES</button>
+  <button class="nav-btn" onclick="go('quiz',this)"><span class="n-icon">▸</span>QUIZ</button>
+  <button class="nav-btn" onclick="go('deploy',this)"><span class="n-icon">▸</span>MOBILE DEPLOY</button>
+</nav>
+
+<!-- HOME -->
+<section class="section active" id="home">
+  <div class="ticker-bar">
+    <div class="tick-item"><span class="tick-label">BTC/USD</span><span class="tick-val tick-g">$68,549</span></div>
+    <div class="tick-item"><span class="tick-label">ETH/USD</span><span class="tick-val tick-r">$1,978</span></div>
+    <div class="tick-item"><span class="tick-label">F&amp;G INDEX</span><span class="tick-val tick-r">18 — EXTREME FEAR</span></div>
+    <div class="tick-item"><span class="tick-label">SIGNALS TODAY</span><span class="tick-val tick-g">3 ACTIVE</span></div>
+    <div class="tick-item"><span class="tick-label">ACADEMY XP</span><span class="tick-val" id="tickXP">0 XP</span></div>
+  </div>
+
+  <div class="home-top">
+    <div class="stat-box">
+      <div class="sb-label">ALGORITHMS</div>
+      <div class="sb-val">7</div>
+      <div class="sb-sub">Active signal strategies</div>
+    </div>
+    <div class="stat-box">
+      <div class="sb-label">GLOSSARY TERMS</div>
+      <div class="sb-val">35+</div>
+      <div class="sb-sub">Core trading terms</div>
+    </div>
+    <div class="stat-box">
+      <div class="sb-label">QUIZ QUESTIONS</div>
+      <div class="sb-val">20</div>
+      <div class="sb-sub">+10 XP each correct</div>
+    </div>
+    <div class="stat-box">
+      <div class="sb-label">YOUR LEVEL</div>
+      <div class="sb-val sb-val-g" id="homeLevel">1</div>
+      <div class="sb-sub" id="homeLevelTitle">NOVICE TRADER</div>
+      <div class="level-progress-bar"><div class="level-prog-fill" id="homeLPF" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="home-grid">
+    <div class="home-card" onclick="go('strategies',document.querySelectorAll('.nav-btn')[1])">
+      <div class="hc-icon">⬡</div>
+      <div class="hc-title">STRATEGIES</div>
+      <div class="hc-desc">7 algorithm deep-dives. Click any card to expand parameters and logic.</div>
+      <div class="hc-arrow">OPEN →</div>
+    </div>
+    <div class="home-card" onclick="go('glossary',document.querySelectorAll('.nav-btn')[2])">
+      <div class="hc-icon">◉</div>
+      <div class="hc-title">GLOSSARY</div>
+      <div class="hc-desc">35+ trading terms. Searchable and filterable by category.</div>
+      <div class="hc-arrow">OPEN →</div>
+    </div>
+    <div class="home-card" onclick="go('resources',document.querySelectorAll('.nav-btn')[3])">
+      <div class="hc-icon">▣</div>
+      <div class="hc-title">RESOURCES</div>
+      <div class="hc-desc">Curated courses, articles and tools for algo traders.</div>
+      <div class="hc-arrow">OPEN →</div>
+    </div>
+    <div class="home-card" onclick="go('quiz',document.querySelectorAll('.nav-btn')[4])">
+      <div class="hc-icon">◆</div>
+      <div class="hc-title">KNOWLEDGE QUIZ</div>
+      <div class="hc-desc">20 questions. Earn XP. Instant feedback on every answer.</div>
+      <div class="hc-arrow">START →</div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGIES -->
+<section class="section" id="strategies">
+  <div class="ph">
+    <div class="ph-title">STRATEGY ENGINE</div>
+    <div class="ph-rule"></div>
+    <div class="ph-sub">CLICK ANY CARD TO EXPAND — +5 XP</div>
+  </div>
+  <div class="g2" id="algoGrid"></div>
+</section>
+
+<!-- GLOSSARY -->
+<section class="section" id="glossary">
+  <div class="ph"><div class="ph-title">GLOSSARY</div><div class="ph-rule"></div><div class="ph-sub">SEARCH OR FILTER BY CATEGORY</div></div>
+  <div class="gls-controls">
+    <input class="gls-search" id="glsQ" placeholder="SEARCH TERMS AND DEFINITIONS..." oninput="renderGls()"/>
+    <div id="catBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+  </div>
+  <div class="gls-grid" id="glsGrid"></div>
+</section>
+
+<!-- RESOURCES -->
+<section class="section" id="resources">
+  <div class="ph"><div class="ph-title">RESOURCES</div><div class="ph-rule"></div><div class="ph-sub">CURATED LEARNING MATERIALS</div></div>
+  <div id="resContent"></div>
+</section>
+
+<!-- QUIZ -->
+<section class="section" id="quiz">
+  <div class="ph"><div class="ph-title">KNOWLEDGE TEST</div><div class="ph-rule"></div><div class="ph-sub">20 QUESTIONS — +10 XP CORRECT</div></div>
+  <div class="quiz-wrap">
+    <div class="quiz-hud">
+      <div class="hud-item">Q <span class="hud-val" id="qNum">1</span>/20</div>
+      <div class="hud-bar-track"><div class="hud-bar-fill" id="qBar" style="width:0%"></div></div>
+      <div class="hud-item">SCORE <span class="hud-val hud-score" id="qScore">0</span></div>
+      <div class="hud-item">XP <span class="hud-val" style="color:var(--amber)" id="qXP">0</span></div>
+    </div>
+    <div id="quizArea"></div>
+    <div class="quiz-done" id="quizDone">
+      <div style="font-size:0.6rem;color:var(--white3);letter-spacing:4px;">ASSESSMENT COMPLETE</div>
+      <div class="done-score" id="doneScore">0/20</div>
+      <div class="done-pct" id="doneGrade"></div>
+      <div class="done-xp" id="doneXP">+0 XP</div><br/>
+      <button class="btn btn-green" onclick="startQuiz()">↺ RETAKE</button>
+    </div>
+  </div>
+</section>
+
+<!-- DEPLOY -->
+<section class="section" id="deploy">
+  <div class="ph"><div class="ph-title">MOBILE DEPLOY</div><div class="ph-rule"></div><div class="ph-sub">4 METHODS — CHOOSE BY NEED</div></div>
+  <div class="deploy-grid">
+
+    <div class="deploy-card">
+      <div class="dc-head"><div class="dc-title">LOCAL WIFI</div><span class="dc-badge badge-amber">EASIEST</span></div>
+      <div class="dc-body">
+        <div class="dc-desc">Same-network access. Any phone on your WiFi can reach the app. No extra software needed.</div>
+        <ul class="step-list">
+          <li><div class="step-n">1</div><div class="step-text"><strong>Find your PC IP</strong><code>ipconfig</code>Look for IPv4 e.g. <span style="color:var(--amber3)">192.168.1.5</span></div></li>
+          <li><div class="step-n">2</div><div class="step-text"><strong>Expose frontend</strong><code>npm run dev -- --host</code></div></li>
+          <li><div class="step-n">3</div><div class="step-text"><strong>Open on phone browser</strong><code>http://192.168.1.5:3000</code></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deploy-card">
+      <div class="dc-head"><div class="dc-title">NGROK TUNNEL</div><span class="dc-badge badge-green">GLOBAL</span></div>
+      <div class="dc-body">
+        <div class="dc-desc">Public URL accessible worldwide on any network or cellular data. Free tier available.</div>
+        <ul class="step-list">
+          <li><div class="step-n">1</div><div class="step-text"><strong>Install ngrok</strong><code>winget install ngrok</code></div></li>
+          <li><div class="step-n">2</div><div class="step-text"><strong>Auth (free at ngrok.com)</strong><code>ngrok config add-authtoken TOKEN</code></div></li>
+          <li><div class="step-n">3</div><div class="step-text"><strong>Start tunnel</strong><code>ngrok http 3000</code></div></li>
+          <li><div class="step-n">4</div><div class="step-text"><strong>Use the public URL shown</strong><code class="green">https://abc123.ngrok.io ✓</code>Works on any phone, any country</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deploy-card">
+      <div class="dc-head"><div class="dc-title">RAILWAY CLOUD</div><span class="dc-badge badge-white">PERMANENT</span></div>
+      <div class="dc-body">
+        <div class="dc-desc">Deploy once, runs 24/7. PC doesn't need to be on. Free tier. Real domain included.</div>
+        <ul class="step-list">
+          <li><div class="step-n">1</div><div class="step-text"><strong>Push to GitHub</strong><code>git init && git add .<br>git commit -m "init"<br>git push origin main</code></div></li>
+          <li><div class="step-n">2</div><div class="step-text"><strong>railway.app → New Project → GitHub</strong></div></li>
+          <li><div class="step-n">3</div><div class="step-text"><strong>Add env vars (PORT=8000, API keys)</strong></div></li>
+          <li><div class="step-n">4</div><div class="step-text"><strong>Permanent URL assigned</strong><code class="green">yourapp.railway.app ✓</code></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deploy-card">
+      <div class="dc-head"><div class="dc-title">PWA HOME SCREEN</div><span class="dc-badge badge-amber">APP FEEL</span></div>
+      <div class="dc-body">
+        <div class="dc-desc">Install CryptoQuant as a home screen app. Fullscreen, no browser bar — feels native.</div>
+        <ul class="step-list">
+          <li><div class="step-n">1</div><div class="step-text"><strong>First deploy via Method 2 or 3</strong></div></li>
+          <li><div class="step-n">2</div><div class="step-text"><strong>iPhone (Safari only)</strong><br>Share icon → "Add to Home Screen"</div></li>
+          <li><div class="step-n">3</div><div class="step-text"><strong>Android (Chrome)</strong><br>3-dot menu → "Install App" or "Add to Home Screen"</div></li>
+          <li><div class="step-n">4</div><div class="step-text"><strong>Result</strong><code class="green">CQ icon on home screen. Fullscreen. ✓</code></div></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+// ── DATA ────────────────────────────────────────────────
+
+const ALGOS=[
+  {n:"01",name:"RSI DIVERGENCE",type:"Momentum Oscillator",tag:"MOMENTUM",
+  desc:"Detects when price makes a new high or low but RSI fails to confirm — classic sign of exhaustion and reversal.",
+  tags:["Bullish Div","Bearish Div","Oversold","Overbought"],
+  detail:"RSI (Relative Strength Index) measures momentum by comparing average gains to losses over 14 periods (0–100 scale). Divergence = price and RSI moving in opposite directions. Bullish: price lower low + RSI higher low → buy. Bearish: price higher high + RSI lower high → sell. Extreme levels: RSI < 30 = oversold, RSI > 70 = overbought.",
+  params:[["Period","14 candles"],["Overbought","70"],["Oversold","30"],["Weight","1 of 3 required"],["Best TF","1H / 4H"]]},
+  {n:"02",name:"MACD CROSSOVER",type:"Trend Following",tag:"TREND",
+  desc:"Identifies momentum shifts when MACD line crosses the signal line, filtered by histogram expansion to reduce false entries.",
+  tags:["Bull Cross","Bear Cross","Histogram","Zero Cross"],
+  detail:"MACD uses two EMAs: fast (12) and slow (26). MACD line = EMA12 − EMA26. Signal = 9-period EMA of MACD. Bullish cross: MACD rises above signal = long entry. Bearish: MACD drops below signal = short. Histogram = MACD − Signal; growing bars = strengthening momentum.",
+  params:[["Fast EMA","12 periods"],["Slow EMA","26 periods"],["Signal EMA","9 periods"],["Weight","1 of 3 required"],["Best TF","4H / 1D"]]},
+  {n:"03",name:"BOLLINGER SQUEEZE",type:"Volatility Breakout",tag:"VOLATILITY",
+  desc:"Detects compressed volatility when bands converge and fires when price breaks out of the contraction zone with force.",
+  tags:["Squeeze","Bull Break","Bear Break","Band Touch"],
+  detail:"Bands = 20-period SMA ± 2 std deviations. Squeeze = upper/lower bands converging below bandwidth threshold = compressed volatility. Markets cycle between low and high volatility — a squeeze often precedes explosive directional moves. Signal fires on the breakout candle.",
+  params:[["SMA Period","20 candles"],["Std Dev","2.0×"],["Squeeze Thresh","< 2% width"],["Weight","1 of 3 required"],["Best TF","1H / 4H"]]},
+  {n:"04",name:"VOLUME PROFILE",type:"Market Microstructure",tag:"VOLUME",
+  desc:"Maps traded volume across price levels to find POC, Value Area, and high-probability support/resistance zones.",
+  tags:["POC Touch","VAH Reject","VAL Support","Vol Spike"],
+  detail:"Volume Profile shows volume by price (not time). High Volume Nodes (HVN) = magnets / S/R. Low Volume Nodes (LVN) = price moves through fast. POC (Point of Control) = price level with most volume = key mean reversion target. Value Area = 70% of all volume range.",
+  params:[["Profile Window","100 candles"],["Volume Bins","24 levels"],["POC Tolerance","0.5%"],["Weight","1 of 3 required"],["Best TF","1H"]]},
+  {n:"05",name:"EMA TREND FILTER",type:"Trend Confirmation",tag:"FILTER",
+  desc:"Multi-EMA stack (9/21/55/200) confirms macro trend direction. Acts as a mandatory filter for all other signals.",
+  tags:["Stack Bull","Stack Bear","EMA Cross","Filter"],
+  detail:"Bullish stack = EMA9 > EMA21 > EMA55 > EMA200. Bearish = reverse. This algo is a filter: LONG signals only fire when stack is bullish, SHORT only when bearish. Single most impactful rule for reducing false signals across all timeframes.",
+  params:[["Fast","EMA9"],["Mid","EMA21"],["Slow","EMA55"],["Trend","EMA200"],["Role","Required filter"]]},
+  {n:"06",name:"SUPPORT / RESISTANCE",type:"Price Action",tag:"PRICE ACTION",
+  desc:"Auto-detects key horizontal levels using fractal pivots and volume clusters. Signals fire at high-probability reversal zones.",
+  tags:["SR Touch","SR Break","Retest","Cluster"],
+  detail:"Support = price floor where buyers overcame sellers historically. Resistance = ceiling where sellers dominated. Algorithm finds these via fractal pivot points + volume concentration. Signals: touch = potential bounce; breakout = continuation trade. Retest of broken S/R is a high-probability entry.",
+  params:[["Lookback","200 candles"],["Touch Tol.","0.3%"],["Cluster Radius","1.0%"],["Weight","1 of 3 required"],["Best TF","4H / 1D"]]},
+  {n:"07",name:"ATR RISK ENGINE",type:"Position Sizing",tag:"RISK",
+  desc:"Calculates dynamic SL and TP using Average True Range — every signal gets volatility-adjusted 1:2 R/R minimum.",
+  tags:["SL Set","TP Set","R/R Check","ATR Spike"],
+  detail:"ATR = average of true ranges over 14 periods = volatility in price units. SL = Entry ± ATR × 1.5. TP = Entry ± ATR × 3.0 → 1:2 R/R minimum. Every trade risks 1% of capital. In high-volatility markets stops widen automatically; in calm markets they tighten. Prevents getting stopped out on noise.",
+  params:[["ATR Period","14 candles"],["SL Mult","1.5×"],["TP Mult","3.0×"],["Min R/R","1:2"],["Risk/Trade","1% capital"]]}
+];
+
+const GLOSSARY=[
+  {t:"ATR",d:"Average True Range — measures market volatility by averaging true range over N periods.",c:"INDICATORS"},
+  {t:"RSI",d:"Relative Strength Index — momentum oscillator measuring price change speed (0–100).",c:"INDICATORS"},
+  {t:"MACD",d:"Moving Average Convergence Divergence — trend/momentum indicator using two EMAs.",c:"INDICATORS"},
+  {t:"EMA",d:"Exponential Moving Average — weighted MA that reacts faster to recent price changes.",c:"INDICATORS"},
+  {t:"SMA",d:"Simple Moving Average — unweighted mean of prices over a specific number of periods.",c:"INDICATORS"},
+  {t:"Bollinger Bands",d:"Volatility bands plotted 2 std deviations above/below a 20-period SMA.",c:"INDICATORS"},
+  {t:"Volume Profile",d:"Distribution of trading volume across price levels (not time) over a period.",c:"INDICATORS"},
+  {t:"Divergence",d:"Price makes new high/low but indicator fails to confirm — signals potential reversal.",c:"SIGNALS"},
+  {t:"Support",d:"Price floor where buyers have historically overcome sellers, preventing further decline.",c:"PRICE ACTION"},
+  {t:"Resistance",d:"Price ceiling where sellers have historically overcome buyers, halting advances.",c:"PRICE ACTION"},
+  {t:"Breakout",d:"Price moves beyond support or resistance with increased volume — continuation signal.",c:"PRICE ACTION"},
+  {t:"Fibonacci",d:"Retracement levels (23.6%, 38.2%, 61.8%) derived from Fibonacci sequence for S/R targets.",c:"PRICE ACTION"},
+  {t:"Fractal",d:"5-bar pattern where middle bar has highest high or lowest low — identifies key pivots.",c:"PRICE ACTION"},
+  {t:"POC",d:"Point of Control — price level with highest traded volume in the Volume Profile.",c:"VOLUME"},
+  {t:"Value Area",d:"Price range containing ~70% of all traded volume in a session.",c:"VOLUME"},
+  {t:"HVN",d:"High Volume Node — price with above-average volume; acts as S/R magnet.",c:"VOLUME"},
+  {t:"LVN",d:"Low Volume Node — little activity at this price; price tends to move through quickly.",c:"VOLUME"},
+  {t:"Stop Loss",d:"Pre-set order closing a trade at a defined loss level to limit downside risk.",c:"RISK"},
+  {t:"Take Profit",d:"Pre-set order closing a trade at a defined profit level to secure gains.",c:"RISK"},
+  {t:"Risk/Reward",d:"Ratio of potential loss to potential gain. 1:2 = risk $1 to make $2.",c:"RISK"},
+  {t:"Position Sizing",d:"Calculating trade size so max loss equals a predetermined % of account (e.g. 1%).",c:"RISK"},
+  {t:"Drawdown",d:"Decline from portfolio peak to trough — measures worst-case loss period.",c:"RISK"},
+  {t:"Sharpe Ratio",d:"Risk-adjusted return. Above 1.0 = acceptable, above 2.0 = strong.",c:"METRICS"},
+  {t:"Win Rate",d:"Percentage of profitable trades. 50%+ with 1:2 R/R is long-term profitable.",c:"METRICS"},
+  {t:"Backtest",d:"Running a strategy on historical data to evaluate hypothetical past performance.",c:"METRICS"},
+  {t:"Long",d:"Buying an asset expecting price to rise. Profit = price increase.",c:"BASICS"},
+  {t:"Short",d:"Selling borrowed asset expecting price to fall. Profit = price decrease.",c:"BASICS"},
+  {t:"Volatility",d:"Degree of price fluctuation. High volatility = larger, faster price swings.",c:"BASICS"},
+  {t:"Candlestick",d:"Chart bar showing open, high, low, close for a specific time period.",c:"BASICS"},
+  {t:"Spread",d:"Difference between bid and ask price — a hidden cost on every trade.",c:"BASICS"},
+  {t:"Slippage",d:"Difference between expected and actual execution price, common in volatile markets.",c:"BASICS"},
+  {t:"Fear & Greed",d:"Sentiment index 0–100. 0=Extreme Fear, 100=Extreme Greed. Used contrarily.",c:"SENTIMENT"},
+  {t:"Extreme Fear",d:"Index 0–25. Panic selling. Historically creates contrarian buying opportunities.",c:"SENTIMENT"},
+  {t:"Momentum",d:"Rate of price acceleration. Strong momentum = trending, sustained directional move.",c:"SIGNALS"},
+  {t:"Mean Reversion",d:"Prices tend to return to their average after extreme moves away from it.",c:"SIGNALS"}
+];
+
+const RESOURCES=[
+  {section:"VIDEO COURSES",items:[
+    {icon:"▶",title:"Algorithmic Trading Full Course",meta:"YouTube • 4hr • Free",url:"https://www.youtube.com/results?search_query=algorithmic+trading+python+full+course"},
+    {icon:"▶",title:"Technical Analysis Masterclass",meta:"YouTube • 6hr • Free",url:"https://www.youtube.com/results?search_query=technical+analysis+masterclass+crypto"},
+    {icon:"▶",title:"RSI + MACD Strategy Deep Dive",meta:"YouTube • 45min • Free",url:"https://www.youtube.com/results?search_query=rsi+macd+strategy+crypto"}
+  ]},
+  {section:"ESSENTIAL READING",items:[
+    {icon:"◉",title:"Investopedia — RSI Complete Guide",meta:"Article • ~10 min",url:"https://www.investopedia.com/terms/r/rsi.asp"},
+    {icon:"◉",title:"Investopedia — MACD Explained",meta:"Article • ~8 min",url:"https://www.investopedia.com/terms/m/macd.asp"},
+    {icon:"◉",title:"Investopedia — Bollinger Bands",meta:"Article • ~12 min",url:"https://www.investopedia.com/terms/b/bollingerbands.asp"},
+    {icon:"◉",title:"Investopedia — Volume Profile",meta:"Article • ~15 min",url:"https://www.investopedia.com/articles/technical/02/010702.asp"}
+  ]},
+  {section:"TOOLS & PLATFORMS",items:[
+    {icon:"⬡",title:"TradingView — Charting Platform",meta:"Free tier available",url:"https://www.tradingview.com"},
+    {icon:"⬡",title:"Binance — Live Market Data",meta:"Exchange • Global",url:"https://www.binance.com"},
+    {icon:"⬡",title:"Fear & Greed Index — Live",meta:"Alternative.me • Free",url:"https://alternative.me/crypto/fear-and-greed-index/"}
+  ]},
+  {section:"ADVANCED LEARNING",items:[
+    {icon:"◈",title:"QuantConnect — Algo Trading IDE",meta:"Cloud platform • Free tier",url:"https://www.quantconnect.com"},
+    {icon:"◈",title:"Backtrader — Python Backtesting Docs",meta:"Open source library",url:"https://www.backtrader.com/docu/"}
+  ]}
+];
+
+const QUIZ=[
+  {q:"What does RSI stand for?",c:"INDICATORS",o:["Relative Strength Index","Risk Signal Indicator","Resistance Support Index","Rate of Signal Increase"],a:0,e:"RSI = Relative Strength Index. Measures momentum on a 0–100 scale by comparing average gains to average losses."},
+  {q:"RSI above 70 indicates the market is:",c:"INDICATORS",o:["Oversold","Overbought","Neutral","Trending"],a:1,e:"RSI > 70 = Overbought (potential sell). RSI < 30 = Oversold (potential buy)."},
+  {q:"Bearish RSI divergence occurs when:",c:"SIGNALS",o:["Price makes lower low, RSI makes lower low","Price makes higher high, RSI makes lower high","Price makes lower low, RSI makes higher low","Both price and RSI rise together"],a:1,e:"Bearish divergence: price higher high + RSI lower high = momentum fading. Signals potential reversal downward."},
+  {q:"The MACD line is calculated as:",c:"INDICATORS",o:["SMA(26) − SMA(12)","EMA(12) − EMA(26)","EMA(26) − EMA(12)","9-period EMA of price"],a:1,e:"MACD = EMA(12) − EMA(26). Signal line = 9-period EMA of MACD."},
+  {q:"Default Bollinger Bands use how many standard deviations?",c:"INDICATORS",o:["1","2","3","1.5"],a:1,e:"Default = 20-period SMA ± 2 standard deviations, covering ~95% of price action statistically."},
+  {q:"A Bollinger Band Squeeze typically signals:",c:"SIGNALS",o:["A strong existing trend","Upcoming low-volatility sideways action","Compressed volatility before a potential explosive breakout","Overbought conditions"],a:2,e:"Squeeze = bands converging = low volatility. Markets cycle low→high volatility, so a squeeze often precedes a large move."},
+  {q:"POC in Volume Profile stands for:",c:"VOLUME",o:["Point of Control","Price of Correction","Peak of Candle","Pivot of Consolidation"],a:0,e:"Point of Control = price level with the most traded volume. Acts as key S/R and mean-reversion target."},
+  {q:"A bullish EMA stack configuration is:",c:"INDICATORS",o:["200 > 55 > 21 > 9","9 > 21 > 55 > 200","21 > 9 > 200 > 55","55 > 21 > 9 > 200"],a:1,e:"Bullish = EMA9 > EMA21 > EMA55 > EMA200. Each faster EMA above slower = uptrend confirmed across timeframes."},
+  {q:"CryptoQuant ATR Risk Engine minimum R/R ratio:",c:"RISK",o:["1:1","1:1.5","1:2","1:3"],a:2,e:"SL = ATR × 1.5, TP = ATR × 3.0, giving 1:2 R/R minimum. Risk 1% of capital per trade."},
+  {q:"How many algorithms must agree before a signal fires?",c:"SIGNALS",o:["1","2","3","All 7"],a:2,e:"3+ algorithms must agree simultaneously — drastically reduces false signals compared to single-algo triggers."},
+  {q:"In a SHORT trade you profit when:",c:"BASICS",o:["Price rises","Price stays flat","Price falls","Volume increases"],a:2,e:"Shorting = selling borrowed assets. You profit by buying them back at a lower price when the market falls."},
+  {q:"Fear & Greed Index of 18 means:",c:"SENTIMENT",o:["Extreme Greed","Neutral","Fear","Extreme Fear"],a:3,e:"0–25 = Extreme Fear. Panic selling often creates high-probability contrarian buying opportunities."},
+  {q:"ATR stands for:",c:"INDICATORS",o:["Average Trade Return","Average True Range","Automated Trading Range","Asset Trend Ratio"],a:1,e:"ATR = Average True Range. Measures current market volatility in absolute price units."},
+  {q:"Support levels in trading represent:",c:"PRICE ACTION",o:["Price ceilings where sellers dominate","Price floors where buyers historically prevailed","Fibonacci retracement zones","Areas of zero trading volume"],a:1,e:"Support = historical price floor. Buyers have repeatedly stepped in here, preventing further declines."},
+  {q:"A Low Volume Node (LVN) indicates:",c:"VOLUME",o:["Strong long-term support","High liquidity zone","Price tends to move through quickly","A previous market high"],a:2,e:"LVN = little trading activity at that price = no major S/R. Price tends to travel through LVNs rapidly."},
+  {q:"A Sharpe Ratio above 2.0 is considered:",c:"METRICS",o:["Poor","Adequate","Strong","Average"],a:2,e:"Sharpe > 1.0 = acceptable, > 2.0 = strong, > 3.0 = excellent. Measures risk-adjusted returns."},
+  {q:"Position sizing primarily determines:",c:"RISK",o:["Which asset to trade","The entry timing","How large a position to take","Where to place the stop loss"],a:2,e:"Position sizing = calculating units to buy so that if SL is hit, loss = predetermined % of account (e.g. 1%)."},
+  {q:"Backtesting is the process of:",c:"METRICS",o:["Live trading with real money","Testing a strategy on historical price data","Manual chart pattern review","Simulated forward trading"],a:1,e:"Backtesting = running a strategy against past data to evaluate hypothetical performance metrics like win rate and Sharpe."},
+  {q:"The MACD Histogram represents:",c:"INDICATORS",o:["The MACD line itself","MACD minus Signal line","9-period EMA of price","Volume-weighted momentum"],a:1,e:"Histogram = MACD − Signal. Growing bars = accelerating momentum. Shrinking bars = momentum fading, crossover may be near."},
+  {q:"Which CryptoQuant algorithm acts as a mandatory directional filter?",c:"SIGNALS",o:["RSI Divergence","MACD Crossover","EMA Trend Filter","Bollinger Squeeze"],a:2,e:"EMA Trend Filter: LONG signals only when EMA9>21>55>200 (bullish stack). SHORT only when reversed. Prevents trading against trend."}
+];
+
+// ── STATE ────────────────────────────────────────────────
+let xp=0, lvl=1;
+const LEVELS=["NOVICE","CHART READER","SIGNAL HUNTER","ALGO ANALYST","QUANT ENG.","STRATEGIST","ORACLE"];
+let qIdx=0, qScore=0, qDone=false, qQ=[], qXPEarned=0;
+let activeCat='ALL', expandedAlgo=null;
+
+// ── CLOCK ────────────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    String(n.getHours()).padStart(2,'0')+':'+
+    String(n.getMinutes()).padStart(2,'0')+':'+
+    String(n.getSeconds()).padStart(2,'0')+' UTC';
+}
+setInterval(tick,1000); tick();
+
+// ── NAV ─────────────────────────────────────────────────
+function go(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+// ── XP / LEVEL ───────────────────────────────────────────
+function gainXP(n){
+  xp+=n;
+  const inL=xp%100, lv=Math.min(Math.floor(xp/100)+1,LEVELS.length);
+  lvl=lv;
+  const pct=(inL/100)*100;
+  document.getElementById('hXPBar').style.width=pct+'%';
+  document.getElementById('hXPNum').textContent=xp;
+  document.getElementById('hLvl').textContent=lv;
+  document.getElementById('hLvlTitle').textContent=LEVELS[lv-1];
+  document.getElementById('homeLevel').textContent=lv;
+  document.getElementById('homeLevelTitle').textContent=LEVELS[lv-1]+' TRADER';
+  document.getElementById('homeLPF').style.width=pct+'%';
+  document.getElementById('tickXP').textContent=xp+' XP';
+  if(document.getElementById('qXP')) document.getElementById('qXP').textContent=xp;
+}
+
+// ── ALGO BUILD ───────────────────────────────────────────
+function buildAlgos(){
+  document.getElementById('algoGrid').innerHTML=ALGOS.map((a,i)=>`
+    <div class="algo-panel" id="ap${i}" onclick="toggleAlgo(${i})">
+      <div class="algo-head">
+        <div class="algo-row1">
+          <div class="algo-idx">${a.n}</div>
+          <div class="algo-name-block">
+            <div class="algo-name">${a.name}</div>
+            <div class="algo-type">${a.type}</div>
+          </div>
+        </div>
+        <div class="algo-desc">${a.desc}</div>
+        <div class="algo-tags">${a.tags.map(t=>`<span class="atag">${t}</span>`).join('')}</div>
+        <button class="algo-toggle" id="atBtn${i}">▸ EXPAND  +5 XP</button>
+      </div>
+      <div class="algo-expand" id="ae${i}">
+        <div class="algo-expand-inner">
+          <div class="ae-label">HOW IT WORKS</div>
+          <div class="ae-text">${a.detail}</div>
+          <div class="ae-label">PARAMETERS</div>
+          <table class="ae-table">${a.params.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td></tr>`).join('')}</table>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleAlgo(i){
+  const ae=document.getElementById('ae'+i);
+  const ap=document.getElementById('ap'+i);
+  const btn=document.getElementById('atBtn'+i);
+  if(expandedAlgo===i){
+    ae.classList.remove('open'); ap.classList.remove('expanded');
+    btn.textContent='▸ EXPAND  +5 XP'; expandedAlgo=null;
+  } else {
+    if(expandedAlgo!==null){
+      document.getElementById('ae'+expandedAlgo).classList.remove('open');
+      document.getElementById('ap'+expandedAlgo).classList.remove('expanded');
+      document.getElementById('atBtn'+expandedAlgo).textContent='▸ EXPAND  +5 XP';
+    }
+    ae.classList.add('open'); ap.classList.add('expanded');
+    btn.textContent='▾ COLLAPSE'; expandedAlgo=i;
+    gainXP(5);
+  }
+}
+
+// ── GLOSSARY ─────────────────────────────────────────────
+function buildGlossary(){
+  const cats=[...new Set(GLOSSARY.map(g=>g.c))];
+  document.getElementById('catBtns').innerHTML=
+    `<button class="cat-btn on" onclick="setCat('ALL',this)">ALL</button>`+
+    cats.map(c=>`<button class="cat-btn" onclick="setCat('${c}',this)">${c}</button>`).join('');
+  renderGls();
+}
+function setCat(c,btn){
+  activeCat=c;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); renderGls();
+}
+function renderGls(){
+  const q=document.getElementById('glsQ').value.toLowerCase();
+  const items=GLOSSARY.filter(g=>(activeCat==='ALL'||g.c===activeCat)&&(!q||g.t.toLowerCase().includes(q)||g.d.toLowerCase().includes(q)));
+  document.getElementById('glsGrid').innerHTML=items.length
+    ? items.map(g=>`<div class="gls-card"><div class="gls-term">${g.t}</div><div class="gls-def">${g.d}</div><div class="gls-cat">${g.c}</div></div>`).join('')
+    : '<div style="color:var(--white4);padding:1.5rem;font-size:0.7rem;">NO RESULTS</div>';
+}
+
+// ── RESOURCES ────────────────────────────────────────────
+function buildResources(){
+  document.getElementById('resContent').innerHTML=RESOURCES.map(r=>`
+    <div class="res-group">
+      <div class="res-group-title">${r.section}</div>
+      ${r.items.map(i=>`
+        <div class="res-item" onclick="window.open('${i.url}','_blank')">
+          <div class="res-icon">${i.icon}</div>
+          <div class="res-title">${i.title}</div>
+          <div class="res-meta">${i.meta}</div>
+          <div class="res-arr">↗</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── QUIZ ─────────────────────────────────────────────────
+function shuffle(a){return[...a].sort(()=>Math.random()-0.5);}
+
+function startQuiz(){
+  qQ=shuffle(QUIZ); qIdx=0; qScore=0; qXPEarned=0; qDone=false;
+  document.getElementById('quizDone').classList.remove('show');
+  renderQ();
+}
+
+function renderQ(){
+  if(qIdx>=qQ.length){endQuiz();return;}
+  const q=qQ[qIdx];
+  const pct=Math.round((qIdx/qQ.length)*100);
+  document.getElementById('qNum').textContent=qIdx+1;
+  document.getElementById('qBar').style.width=pct+'%';
+  document.getElementById('qScore').textContent=qScore;
+  document.getElementById('qXP').textContent=xp;
+  document.getElementById('quizArea').innerHTML=`
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-cat">${q.c}</span>
+        <span class="q-num">Q${qIdx+1} / ${qQ.length}</span>
+      </div>
+      <div class="q-body">
+        <div class="q-text">${q.q}</div>
+        <div class="opts">${q.o.map((o,i)=>`
+          <button class="opt" id="opt${i}" onclick="pickOpt(${i})">
+            <span class="opt-letter">${'ABCD'[i]}</span>${o}
+          </button>`).join('')}
+        </div>
+        <div class="feedback" id="fb">
+          <div class="fb-label" id="fbLbl"></div>
+          <div id="fbTxt"></div>
+        </div>
+      </div>
+    </div>
+    <div class="quiz-nav"><button class="btn" id="nxtBtn" onclick="nextQ()" style="display:none">NEXT →</button></div>`;
+}
+
+function pickOpt(i){
+  if(document.getElementById('opt0').disabled) return;
+  const q=qQ[qIdx], ok=i===q.a;
+  ['opt0','opt1','opt2','opt3'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById('opt'+q.a).classList.add('correct');
+  if(!ok) document.getElementById('opt'+i).classList.add('wrong');
+  const fb=document.getElementById('fb'), lbl=document.getElementById('fbLbl');
+  fb.classList.add('show');
+  if(ok){
+    qScore++; fb.classList.add('fb-correct'); fb.classList.remove('fb-wrong');
+    lbl.textContent='CORRECT'; lbl.style.color='var(--green2)';
+    gainXP(10); qXPEarned+=10;
+  } else {
+    fb.classList.add('fb-wrong'); fb.classList.remove('fb-correct');
+    lbl.textContent='INCORRECT'; lbl.style.color='var(--red)';
+  }
+  document.getElementById('fbTxt').textContent=q.e;
+  document.getElementById('nxtBtn').style.display='block';
+  document.getElementById('qScore').textContent=qScore;
+}
+
+function nextQ(){qIdx++;renderQ();}
+
+function endQuiz(){
+  document.getElementById('quizArea').innerHTML='';
+  document.getElementById('qBar').style.width='100%';
+  const pct=Math.round((qScore/qQ.length)*100);
+  const grade=pct>=90?'MASTER LEVEL — EXCEPTIONAL':pct>=70?'STRONG PERFORMANCE':pct>=50?'PROGRESSING — REVIEW WEAK AREAS':'STUDY REQUIRED — RETAKE RECOMMENDED';
+  const bonus=Math.round(pct*0.5); gainXP(bonus); qXPEarned+=bonus;
+  document.getElementById('doneScore').textContent=qScore+'/'+qQ.length;
+  document.getElementById('doneGrade').textContent=grade+' — '+pct+'% ACCURACY';
+  document.getElementById('doneXP').textContent='+'+qXPEarned+' XP EARNED';
+  document.getElementById('quizDone').classList.add('show');
+}
+
+// ── INIT ─────────────────────────────────────────────────
+buildAlgos(); buildGlossary(); buildResources(); startQuiz();
+</script>
+</body>
+</html>

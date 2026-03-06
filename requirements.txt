@@ -1,0 +1,15 @@
+# Core framework
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.6.1
+
+# Data
+pandas==2.2.3
+numpy==1.26.4
+
+# Async HTTP (for market data)
+aiohttp==3.10.10
+
+# Utilities
+python-dotenv==1.0.1
