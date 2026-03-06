@@ -2,8 +2,9 @@ FROM node:18-alpine
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm install
+RUN chmod +x node_modules/.bin/vite
 COPY frontend/ .
-RUN npm run build
+RUN npx vite build
 FROM nginx:alpine
 COPY --from=0 /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
