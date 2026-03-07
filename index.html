@@ -182,7 +182,16 @@ export default function App(){
             <div>
               <div style={{fontSize:11,color:'#555',marginBottom:4}}>PAIR</div>
               <select value={btPair} onChange={e=>setBtPair(e.target.value)}>
-                {['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','ADAUSDT','XRPUSDT','DOTUSDT','AVAXUSDT'].map(p=><option key={p}>{p}</option>)}
+                {TRADING_PAIRS = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT"
+].map(p=><option key={p}>{p}</option>)}
               </select>
             </div>
             <div>
